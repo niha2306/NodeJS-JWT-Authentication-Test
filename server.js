@@ -13,7 +13,7 @@ let users = [
         id: 1,
         username: 'fabio',
         password: '123'
-    }, 
+    },
     {
         id: 2,
         username: 'nolasco',
@@ -28,14 +28,14 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const secretKey = "@#$%^&*()(*&^%$&0987654@$";
 const jwtMW = exjwt({
     secret: secretKey,
     algorithms: ['HS256'],
     onExpired: async (req, err) => {
-        if (new Date() - err.inner.expiredAt < 5000) { return;}
+        if (new Date() - err.inner.expiredAt < 5000) { return; }
         throw err;
     },
 });
@@ -45,14 +45,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/login', (req, res) => {
-    const {username, password} = req.body;
-    
-    for(const user of users) {
-        if(username == user.username && password == user.password) {
+    const { username, password } = req.body;
+
+    for (const user of users) {
+        if (username == user.username && password == user.password) {
             let token = jwt.sign({
                 id: user.id,
                 username: user.username
-            },secretKey,{expiresIn: '3m'});
+            }, secretKey, { expiresIn: '3m' });
 
             res.json({
                 success: true,
@@ -92,10 +92,10 @@ app.get('/api/settings', jwtMW, (req, res) => {
     });
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     console.log(err.name === 'UnauthorizedError');
     console.log(err);
-    if(err.name === 'UnauthorizedError') {
+    if (err.name === 'UnauthorizedError') {
         res.status(401).json({
             success: false,
             officalError: err,
@@ -106,7 +106,7 @@ app.use(function(err, req, res, next) {
     }
 });
 
-app.listen( PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server on port ${PORT}`)
 });
 
